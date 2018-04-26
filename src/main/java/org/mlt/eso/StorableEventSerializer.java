@@ -16,7 +16,6 @@ public class StorableEventSerializer {
 
     public StorableEventSerializer() {
         mapper = new ObjectMapper();
-        mapper.enableDefaultTyping();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
     }

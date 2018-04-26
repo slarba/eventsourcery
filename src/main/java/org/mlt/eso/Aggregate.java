@@ -20,7 +20,9 @@ public class Aggregate {
     }
 
     public UUID getId() { return id; }
+
     public long getVersion() { return version; }
+
     protected void setId(UUID id) {
         this.id = id;
     }

@@ -7,7 +7,7 @@ import java.util.UUID;
 /**
  * Created by Marko on 26.4.2018.
  */
-public class InMemoryEventStore implements EventStore {
+public class InMemoryNotifyingEventStore extends NotifyingEventStore {
     private ArrayList<String> events = new ArrayList<>();
 
     @Override
@@ -41,5 +41,6 @@ public class InMemoryEventStore implements EventStore {
             System.out.println(json);
             this.events.add(json);
         }
+        notifyListeners(events);
     }
 }

@@ -1,6 +1,6 @@
-package org.mlt.eso;
+package org.mlt.esotest.events;
 
-import java.util.UUID;
+import org.mlt.eso.Event;
 
 /**
  * Created by Marko on 26.4.2018.

@@ -39,4 +39,8 @@ public class Events {
     public static void registerEventType(String id, Class<?> cls) {
         mapping.put(id, cls.getName());
     }
+
+    public static void deregisterEventType(String id) {
+        mapping.remove(id);
+    }
 }

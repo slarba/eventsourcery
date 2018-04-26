@@ -1,6 +1,11 @@
 package org.mlt.eso;
 
 import org.junit.Test;
+import org.mlt.esotest.*;
+import org.mlt.esotest.events.AggregateExampleCreated;
+import org.mlt.esotest.events.AggregateExampleDeleted;
+import org.mlt.esotest.events.CountIncreasedEvent;
+import org.mlt.esotest.events.NameSetEvent;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +26,9 @@ public class EventReplayTest {
         Events.registerEventType("CountIncreased", CountIncreasedEvent.class);
         Events.registerEventType("NameSet", NameSetEvent.class);
         Events.registerEventType("AggregateDeleted", AggregateExampleDeleted.class);
+
+        NotifyingEventStore eventStore = new InMemoryNotifyingEventStore();
+        AggregateRepository repo = new AggregateRepository(eventStore);
 
         AtomicReference<UUID> originalId = new AtomicReference<>();
 
@@ -43,24 +51,25 @@ public class EventReplayTest {
             assertEquals(3, ex.getCount());
         });
 
-        EventStore eventStore = new InMemoryEventStore();
         eventStore.append(events);
 
-        AggregateRepository repo = new AggregateRepository(eventStore);
         final AggregateExample result = repo.findById(originalId.get());
 
         assertEquals(originalId.get(), result.getId());
         assertEquals(4, result.getVersion());
         assertEquals("foo", result.getName());
         assertEquals(3, result.getCount());
+        assertEquals(1, repo.getAggregateCount());
 
         events = Events.collecting(() -> {
             result.delete();
             assertTrue(result.isDeleted());
         });
+
         eventStore.append(events);
 
         AggregateExample result2 = repo.findById(originalId.get());
         assertNull(result2);
+        assertEquals(0, repo.getAggregateCount());
     }
 }

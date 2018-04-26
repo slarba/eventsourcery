@@ -1,4 +1,11 @@
-package org.mlt.eso;
+package org.mlt.esotest;
+
+import org.mlt.eso.Aggregate;
+import org.mlt.eso.Events;
+import org.mlt.esotest.events.AggregateExampleCreated;
+import org.mlt.esotest.events.AggregateExampleDeleted;
+import org.mlt.esotest.events.CountIncreasedEvent;
+import org.mlt.esotest.events.NameSetEvent;
 
 /**
  * Created by Marko on 26.4.2018.
@@ -25,6 +32,21 @@ public class AggregateExample extends Aggregate {
         Events.dispatch(this, new CountIncreasedEvent(amount));
     }
 
+    public void delete() {
+        setDeleted(true);
+        Events.dispatch(this, new AggregateExampleDeleted());
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    // Event handlers
+
     public void on(AggregateExampleCreated event) {
         setId(event.getId());
         this.count = event.getCount();
@@ -41,18 +63,5 @@ public class AggregateExample extends Aggregate {
 
     public void on(NameSetEvent event) {
         this.name = event.getName();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void delete() {
-        setDeleted(true);
-        Events.dispatch(this, new AggregateExampleDeleted());
     }
 }
