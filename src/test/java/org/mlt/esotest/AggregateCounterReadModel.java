@@ -41,4 +41,8 @@ public class AggregateCounterReadModel implements AppendListener {
     public int getCount() {
         return count;
     }
+
+    public void close() {
+        store.removeAppendListener(this);
+    }
 }

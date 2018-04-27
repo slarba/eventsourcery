@@ -3,7 +3,7 @@ package org.mlt.eso;
 import org.hsqldb.jdbc.JDBCDataSource;
 import org.junit.Test;
 import org.mlt.eso.serialization.StorableEvent;
-import org.mlt.eso.stores.JdbcEventStore;
+import org.mlt.eso.stores.JDBCEventStore;
 import org.mlt.esotest.*;
 import org.mlt.esotest.events.AggregateExampleCreated;
 import org.mlt.esotest.events.AggregateExampleDeleted;
@@ -39,7 +39,7 @@ public class EventReplayTest {
     @Test
     public void testEventReplay() {
         DataSource ds = createHsqlDbDatasource();
-        JdbcEventStore eventStore = new JdbcEventStore(ds);
+        JDBCEventStore eventStore = new JDBCEventStore(ds);
         eventStore.createSchema();
 
         Events.registerEventType("AggregateExampleCreated", AggregateExampleCreated.class);
@@ -90,5 +90,7 @@ public class EventReplayTest {
         AggregateExample result2 = repo.findById(originalId.get());
         assertNull(result2);
         assertEquals(0, repo.getAggregateCount());
+
+        repo.close();
     }
 }

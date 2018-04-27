@@ -34,4 +34,8 @@ public class AggregateRepository {
     public int getAggregateCount() {
         return countModel.getCount();
     }
+
+    public void close() {
+        countModel.close();
+    }
 }
