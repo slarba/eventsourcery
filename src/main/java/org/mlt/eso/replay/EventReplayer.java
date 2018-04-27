@@ -1,4 +1,8 @@
-package org.mlt.eso;
+package org.mlt.eso.replay;
+
+import org.mlt.eso.Aggregate;
+import org.mlt.eso.Event;
+import org.mlt.eso.serialization.StorableEvent;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

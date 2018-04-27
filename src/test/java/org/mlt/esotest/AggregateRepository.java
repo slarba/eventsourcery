@@ -1,8 +1,9 @@
 package org.mlt.esotest;
 
-import org.mlt.eso.*;
-import org.mlt.esotest.events.AggregateExampleCreated;
-import org.mlt.esotest.events.AggregateExampleDeleted;
+import org.mlt.eso.replay.EventReplayer;
+import org.mlt.eso.serialization.StorableEvent;
+import org.mlt.eso.stores.EventStore;
+import org.mlt.eso.stores.NotifyingEventStore;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,13 +11,13 @@ import java.util.UUID;
 /**
  * Created by Marko on 26.4.2018.
  */
-public class AggregateRepository implements AppendListener {
+public class AggregateRepository {
     private EventStore store;
-    private int count = 0;
+    private final AggregateCounterReadModel countModel;
 
     public AggregateRepository(NotifyingEventStore store) {
         this.store = store;
-        store.addAppendListener(this);
+        countModel = new AggregateCounterReadModel(store);
     }
 
     public AggregateExample findById(UUID id) {
@@ -31,20 +32,6 @@ public class AggregateRepository implements AppendListener {
     }
 
     public int getAggregateCount() {
-        return count;
-    }
-
-    public void on(AggregateExampleCreated event) {
-        count++;
-    }
-
-    public void on(AggregateExampleDeleted event) {
-        count--;
-    }
-
-    @Override
-    public void eventsAppended(List<StorableEvent> events) {
-        EventReplayer replayer = new EventReplayer();
-        replayer.dispatch(this, events);
+        return countModel.getCount();
     }
 }

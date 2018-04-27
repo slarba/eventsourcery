@@ -1,4 +1,7 @@
-package org.mlt.eso;
+package org.mlt.eso.stores;
+
+import org.mlt.eso.serialization.StorableEvent;
+import org.mlt.eso.serialization.StorableEventSerializer;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -64,6 +67,26 @@ public class JdbcEventStore extends NotifyingEventStore {
             PreparedStatement stmt = c.prepareStatement("SELECT data FROM events WHERE id=>? ORDER BY id ASC LIMIT ?");
             stmt.setInt(1, startindex);
             stmt.setInt(2, count);
+            ResultSet rs = stmt.executeQuery();
+            List<StorableEvent> events = new ArrayList<>();
+            while(rs.next()) {
+                events.add(serializer.jsonToEvent(rs.getString("data")));
+            }
+            return events;
+        } catch (SQLException e) {
+            throw new RuntimeException("sql error", e);
+        }
+    }
+
+    @Override
+    public List<StorableEvent> loadEventsOfType(String[] types, int startindex, int count) {
+        StorableEventSerializer serializer = new StorableEventSerializer();
+        String tfmt = "'" + String.join("','", types) + "'";
+        try {
+            Connection c = dataSource.getConnection();
+            PreparedStatement stmt = c.prepareStatement(String.format("SELECT data FROM events WHERE type IN (%s) ORDER BY id ASC LIMIT ? OFFSET ?", tfmt));
+            stmt.setInt(1, count);
+            stmt.setInt(2, startindex);
             ResultSet rs = stmt.executeQuery();
             List<StorableEvent> events = new ArrayList<>();
             while(rs.next()) {

@@ -1,10 +1,12 @@
-package org.mlt.eso;
+package org.mlt.eso.serialization;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DatabindContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.mlt.eso.Event;
+import org.mlt.eso.Events;
 
 import java.io.IOException;
 
@@ -36,7 +38,7 @@ public class EventTypeIdResolver implements TypeIdResolver {
     public JavaType typeFromId(DatabindContext context, String id) throws IOException {
         TypeFactory tf = context.getTypeFactory();
         try {
-            String className = Events.classForType(id);
+            String className = Events.classForEventType(id);
             if(className==null) {
                 throw new RuntimeException("class for event type " + id + " not registered.");
             }

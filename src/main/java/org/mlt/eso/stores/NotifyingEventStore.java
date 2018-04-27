@@ -1,4 +1,6 @@
-package org.mlt.eso;
+package org.mlt.eso.stores;
+
+import org.mlt.eso.serialization.StorableEvent;
 
 import java.util.ArrayList;
 import java.util.List;

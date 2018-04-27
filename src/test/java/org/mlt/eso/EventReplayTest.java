@@ -1,8 +1,9 @@
 package org.mlt.eso;
 
 import org.hsqldb.jdbc.JDBCDataSource;
-import org.hsqldb.jdbc.JDBCPool;
 import org.junit.Test;
+import org.mlt.eso.serialization.StorableEvent;
+import org.mlt.eso.stores.JdbcEventStore;
 import org.mlt.esotest.*;
 import org.mlt.esotest.events.AggregateExampleCreated;
 import org.mlt.esotest.events.AggregateExampleDeleted;
@@ -26,12 +27,13 @@ public class EventReplayTest {
     private DataSource createHsqlDbDatasource() {
         try {
             Class.forName("org.hsqldb.jdbc.JDBCDriver");
-            JDBCDataSource ds = new JDBCDataSource();
-            ds.setURL("jdbc:hsqldb:mem:events");
-            return ds;
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("cannot load hsqldb jdbc driver");
         }
+
+        JDBCDataSource ds = new JDBCDataSource();
+        ds.setURL("jdbc:hsqldb:mem:events");
+        return ds;
     }
 
     @Test
@@ -49,7 +51,7 @@ public class EventReplayTest {
 
         AtomicReference<UUID> originalId = new AtomicReference<>();
 
-        List<StorableEvent> events = Events.collecting(() -> {
+        List<StorableEvent> events = Events.collect(() -> {
             AggregateExample ex = new AggregateExample(0, "kek");
             assertNotNull(ex.getId());
             originalId.set(ex.getId());
@@ -78,7 +80,7 @@ public class EventReplayTest {
         assertEquals(3, result.getCount());
         assertEquals(1, repo.getAggregateCount());
 
-        events = Events.collecting(() -> {
+        events = Events.collect(() -> {
             result.delete();
             assertTrue(result.isDeleted());
         });

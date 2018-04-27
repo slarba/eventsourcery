@@ -1,4 +1,4 @@
-package org.mlt.eso;
+package org.mlt.eso.serialization;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

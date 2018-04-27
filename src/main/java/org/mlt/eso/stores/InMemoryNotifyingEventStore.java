@@ -1,4 +1,7 @@
-package org.mlt.eso;
+package org.mlt.eso.stores;
+
+import org.mlt.eso.serialization.StorableEvent;
+import org.mlt.eso.serialization.StorableEventSerializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,11 +37,15 @@ public class InMemoryNotifyingEventStore extends NotifyingEventStore {
     }
 
     @Override
+    public List<StorableEvent> loadEventsOfType(String[] types, int startindex, int count) {
+        return null;
+    }
+
+    @Override
     public void append(List<StorableEvent> events) {
         StorableEventSerializer serializer = new StorableEventSerializer();
         for(StorableEvent e : events) {
             String json = serializer.eventToJson(e);
-            System.out.println(json);
             this.events.add(json);
         }
         notifyListeners(events);

@@ -1,4 +1,6 @@
-package org.mlt.eso;
+package org.mlt.eso.stores;
+
+import org.mlt.eso.serialization.StorableEvent;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,6 +11,6 @@ import java.util.UUID;
 public interface EventStore {
     List<StorableEvent> loadEventsForAggregate(UUID uuid);
     List<StorableEvent> loadEvents(int startindex, int count);
-
+    List<StorableEvent> loadEventsOfType(String[] types, int startindex, int count);
     void append(List<StorableEvent> events);
 }

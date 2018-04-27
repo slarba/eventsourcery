@@ -1,8 +1,9 @@
-package org.mlt.eso;
+package org.mlt.eso.serialization;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
+import org.mlt.eso.Event;
 
 import java.util.UUID;
 

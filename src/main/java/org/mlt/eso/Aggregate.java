@@ -11,12 +11,13 @@ public class Aggregate {
     private boolean deleted;
 
     protected Aggregate() {
-
     }
 
     protected Aggregate(boolean init) {
-        this.id = UUID.randomUUID();
-        version = 0;
+        if(init) {
+            this.id = UUID.randomUUID();
+            version = 0;
+        }
     }
 
     public UUID getId() { return id; }

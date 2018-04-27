@@ -1,5 +1,7 @@
 package org.mlt.eso;
 
+import org.mlt.eso.serialization.StorableEvent;
+
 import java.util.*;
 
 /**
@@ -9,7 +11,7 @@ public class Events {
     private static final ThreadLocal<Stack<List<StorableEvent>>> events = ThreadLocal.withInitial(Stack::new);
     private static Map<String, String> mapping = new HashMap<>();
 
-    public static List<StorableEvent> collecting(Runnable r) {
+    public static List<StorableEvent> collect(Runnable r) {
         events.get().push(new ArrayList<>());
         try {
             r.run();
@@ -32,7 +34,7 @@ public class Events {
         }
     }
 
-    public static String classForType(String id) {
+    public static String classForEventType(String id) {
         return mapping.get(id);
     }
 
