@@ -41,61 +41,46 @@ public class JdbcEventStore extends NotifyingEventStore {
         executeSql("CREATE UNIQUE INDEX IF NOT EXISTS event_pk ON events (aggregateId, version)");
     }
 
-    @Override
-    public List<StorableEvent> loadEventsForAggregate(UUID uuid) {
-        StorableEventSerializer serializer = new StorableEventSerializer();
+    private interface StatementInitializer {
+        void apply(PreparedStatement stmt) throws SQLException;
+    }
+
+    private List<StorableEvent> withQuery(String sql, StatementInitializer fn) {
         try {
             Connection c = dataSource.getConnection();
-            PreparedStatement stmt = c.prepareStatement("SELECT data FROM events WHERE aggregateId=? ORDER BY version ASC");
-            stmt.setObject(1, uuid);
-            ResultSet rs = stmt.executeQuery();
-            List<StorableEvent> events = new ArrayList<>();
-            while(rs.next()) {
-                events.add(serializer.jsonToEvent(rs.getString("data")));
-            }
-            return events;
+            PreparedStatement stmt = c.prepareStatement(sql);
+            fn.apply(stmt);
+            List<StorableEvent> result = collectResult(stmt.executeQuery());
+            stmt.close();
+            c.close();
+            return result;
         } catch (SQLException e) {
-            throw new RuntimeException("sql error", e);
+            throw new RuntimeException("error executing sql: ", e);
         }
+    }
+
+    @Override
+    public List<StorableEvent> loadEventsForAggregate(UUID uuid) {
+        return withQuery("SELECT data FROM events WHERE aggregateId=? ORDER BY version ASC", (stmt) -> {
+            stmt.setObject(1, uuid);
+        });
     }
 
     @Override
     public List<StorableEvent> loadEvents(int startindex, int count) {
-        StorableEventSerializer serializer = new StorableEventSerializer();
-        try {
-            Connection c = dataSource.getConnection();
-            PreparedStatement stmt = c.prepareStatement("SELECT data FROM events WHERE id=>? ORDER BY id ASC LIMIT ?");
+        return withQuery("SELECT data FROM events WHERE id=>? ORDER BY id ASC LIMIT ?", (stmt) -> {
             stmt.setInt(1, startindex);
             stmt.setInt(2, count);
-            ResultSet rs = stmt.executeQuery();
-            List<StorableEvent> events = new ArrayList<>();
-            while(rs.next()) {
-                events.add(serializer.jsonToEvent(rs.getString("data")));
-            }
-            return events;
-        } catch (SQLException e) {
-            throw new RuntimeException("sql error", e);
-        }
+        });
     }
 
     @Override
     public List<StorableEvent> loadEventsOfType(String[] types, int startindex, int count) {
-        StorableEventSerializer serializer = new StorableEventSerializer();
-        String tfmt = "'" + String.join("','", types) + "'";
-        try {
-            Connection c = dataSource.getConnection();
-            PreparedStatement stmt = c.prepareStatement(String.format("SELECT data FROM events WHERE type IN (%s) ORDER BY id ASC LIMIT ? OFFSET ?", tfmt));
+        return withQuery(String.format("SELECT data FROM events WHERE type IN (%s) ORDER BY id ASC LIMIT ? OFFSET ?",
+                joinAsStrings(types)), (stmt) -> {
             stmt.setInt(1, count);
             stmt.setInt(2, startindex);
-            ResultSet rs = stmt.executeQuery();
-            List<StorableEvent> events = new ArrayList<>();
-            while(rs.next()) {
-                events.add(serializer.jsonToEvent(rs.getString("data")));
-            }
-            return events;
-        } catch (SQLException e) {
-            throw new RuntimeException("sql error", e);
-        }
+        });
     }
 
     @Override
@@ -110,7 +95,7 @@ public class JdbcEventStore extends NotifyingEventStore {
                 stmt.setTimestamp(3, new Timestamp(e.getOccurred()));
                 stmt.setString(4, e.getData().getType());
                 stmt.setString(5, serializer.eventToJson(e));
-                stmt.execute();
+                stmt.executeUpdate();
             }
             stmt.close();
             c.close();
@@ -119,4 +104,22 @@ public class JdbcEventStore extends NotifyingEventStore {
             throw new RuntimeException("sql error appending events: ", e);
         }
     }
+
+    private String joinAsStrings(String[] items) {
+        return "'" + String.join("','", items) + "'";
+    }
+
+    private List<StorableEvent> collectResult(ResultSet rs) {
+        StorableEventSerializer serializer = new StorableEventSerializer();
+        List<StorableEvent> events = new ArrayList<>();
+        try {
+            while(rs.next()) {
+                events.add(serializer.jsonToEvent(rs.getString("data")));
+            }
+            return events;
+        } catch (SQLException e) {
+            throw new RuntimeException("error collecting events from resultset", e);
+        }
+    }
+
 }
