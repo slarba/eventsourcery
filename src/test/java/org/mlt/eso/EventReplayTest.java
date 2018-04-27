@@ -1,5 +1,7 @@
 package org.mlt.eso;
 
+import org.hsqldb.jdbc.JDBCDataSource;
+import org.hsqldb.jdbc.JDBCPool;
 import org.junit.Test;
 import org.mlt.esotest.*;
 import org.mlt.esotest.events.AggregateExampleCreated;
@@ -7,6 +9,7 @@ import org.mlt.esotest.events.AggregateExampleDeleted;
 import org.mlt.esotest.events.CountIncreasedEvent;
 import org.mlt.esotest.events.NameSetEvent;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -20,14 +23,28 @@ import static org.junit.Assert.assertNull;
  * Created by Marko on 26.4.2018.
  */
 public class EventReplayTest {
+    private DataSource createHsqlDbDatasource() {
+        try {
+            Class.forName("org.hsqldb.jdbc.JDBCDriver");
+            JDBCDataSource ds = new JDBCDataSource();
+            ds.setURL("jdbc:hsqldb:mem:events");
+            return ds;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("cannot load hsqldb jdbc driver");
+        }
+    }
+
     @Test
     public void testEventReplay() {
+        DataSource ds = createHsqlDbDatasource();
+        JdbcEventStore eventStore = new JdbcEventStore(ds);
+        eventStore.createSchema();
+
         Events.registerEventType("AggregateExampleCreated", AggregateExampleCreated.class);
         Events.registerEventType("CountIncreased", CountIncreasedEvent.class);
         Events.registerEventType("NameSet", NameSetEvent.class);
         Events.registerEventType("AggregateDeleted", AggregateExampleDeleted.class);
 
-        NotifyingEventStore eventStore = new InMemoryNotifyingEventStore();
         AggregateRepository repo = new AggregateRepository(eventStore);
 
         AtomicReference<UUID> originalId = new AtomicReference<>();

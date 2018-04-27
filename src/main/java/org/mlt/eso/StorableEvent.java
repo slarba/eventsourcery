@@ -36,6 +36,8 @@ public class StorableEvent {
         return data;
     }
 
+    public long getVersion() { return version; }
+
     public String toString() {
         return "event[" +
                 "aggregateId=" + aggregateId.toString() + "," +
@@ -46,5 +48,9 @@ public class StorableEvent {
 
     public UUID getAggregateId() {
         return aggregateId;
+    }
+
+    public long getOccurred() {
+        return occurred;
     }
 }
