@@ -12,12 +12,12 @@ import java.util.List;
  * Created by Marko on 26.4.2018.
  */
 public class EventReplayer {
-    public void replay(Aggregate ex, List<StorableEvent> events) {
-        if(ex.isDeleted()) {
-            throw new RuntimeException("attempt to replay events on deleted aggregate");
-        }
+    public void rehydrate(Aggregate ex, List<StorableEvent> events) {
         try {
             for (StorableEvent event : events) {
+                if(ex.isDeleted()) {
+                    throw new AggregateAlreadyDeletedException("attempt to rehydrate events on deleted aggregate");
+                }
                 Event data = event.getData();
                 try {
                     Method m = ex.getClass().getMethod("on", data.getClass());

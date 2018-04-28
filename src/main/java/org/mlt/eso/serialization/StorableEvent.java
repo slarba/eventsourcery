@@ -26,10 +26,10 @@ public class StorableEvent {
 
     protected StorableEvent() { }
 
-    public StorableEvent(UUID aggregateId, long version, Event data) {
+    public StorableEvent(UUID aggregateId, long version, long occurred, Event data) {
         this.aggregateId = aggregateId;
         this.version = version;
-        this.occurred = System.currentTimeMillis();
+        this.occurred = occurred;
         this.data = data;
     }
 

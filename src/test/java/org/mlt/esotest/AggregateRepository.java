@@ -27,7 +27,7 @@ public class AggregateRepository {
             return null;
         }
         AggregateExample result = new AggregateExample();
-        replayer.replay(result, storedEvents);
+        replayer.rehydrate(result, storedEvents);
         return result.isDeleted() ? null : result;
     }
 

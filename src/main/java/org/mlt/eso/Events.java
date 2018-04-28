@@ -3,21 +3,26 @@ package org.mlt.eso;
 import org.mlt.eso.serialization.StorableEvent;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Marko on 26.4.2018.
  */
 public class Events {
     private static final ThreadLocal<Stack<List<StorableEvent>>> events = ThreadLocal.withInitial(Stack::new);
-    private static Map<String, String> mapping = new HashMap<>();
+    private static Map<String, String> mapping = new ConcurrentHashMap<>();
 
-    public static List<StorableEvent> collect(Runnable r) {
+    public interface DomainCodeBlock {
+        void run() throws Throwable;
+    }
+
+    public static List<StorableEvent> collect(DomainCodeBlock r) {
         events.get().push(new ArrayList<>());
         try {
             r.run();
         } catch(Throwable t) {
             events.get().pop();
-            throw t;
+            throw new RuntimeException(t);
         }
         return events.get().pop();
     }
@@ -29,9 +34,13 @@ public class Events {
         }
         List<StorableEvent> l = stack.peek();
         for(Event ev : e) {
-            l.add(new StorableEvent(source.getId(), source.getVersion(), ev));
+            l.add(new StorableEvent(source.getId(), source.getVersion(), System.currentTimeMillis(), ev));
             source.bumpVersion();
         }
+    }
+
+    static int getCollectionNestingLevel() {
+        return events.get().size();
     }
 
     public static String classForEventType(String id) {

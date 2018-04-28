@@ -40,7 +40,7 @@ public class EventTypeIdResolver implements TypeIdResolver {
         try {
             String className = Events.classForEventType(id);
             if(className==null) {
-                throw new RuntimeException("class for event type " + id + " not registered.");
+                throw new EventNotRegisteredException("class for event type " + id + " not registered.");
             }
             return tf.constructType(tf.findClass(className));
         } catch (ClassNotFoundException e) {
