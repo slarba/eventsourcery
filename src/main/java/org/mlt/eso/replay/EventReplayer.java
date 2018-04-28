@@ -20,14 +20,13 @@ public class EventReplayer {
                 }
                 Event data = event.getData();
                 try {
-                    Method m = ex.getClass().getMethod("on", data.getClass());
-                    m.invoke(ex, data);
+                    invokeEventHandler(ex, data);
                     ex.bumpVersion();
                 } catch(NoSuchMethodException nsme) {
                     throw new MissingEventHandlerException("no event handler for event "
                             + data.getType() + " (" + data.getClass().getName() + ") in "
                             + ex.getClass().getName(), nsme);
-            }
+                }
             }
         } catch(InvocationTargetException iv) {
             throw new RuntimeException("event handler error: ", iv);
@@ -39,10 +38,8 @@ public class EventReplayer {
     public void dispatch(Object ex, List<StorableEvent> events) {
         try {
             for (StorableEvent event : events) {
-                Event data = event.getData();
                 try {
-                    Method m = ex.getClass().getMethod("on", data.getClass());
-                    m.invoke(ex, data);
+                    invokeEventHandler(ex, event.getData());
                 } catch(NoSuchMethodException nsme) {
                     // ignore
                 }
@@ -52,5 +49,11 @@ public class EventReplayer {
         } catch (IllegalAccessException e) {
             throw new RuntimeException("illegal access", e);
         }
+    }
+
+    private void invokeEventHandler(Object ex, Event data)
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = ex.getClass().getMethod("on", data.getClass());
+        m.invoke(ex, data);
     }
 }
