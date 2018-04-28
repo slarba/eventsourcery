@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":evsosample" external.linked.project.path="$MODULE_DIR$/../../evsosample" external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="evso" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../evsosample">
+      <excludeFolder url="file://$MODULE_DIR$/../../evsosample/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../evsosample/build" />
+      <excludeFolder url="file://$MODULE_DIR$/../../evsosample/out" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

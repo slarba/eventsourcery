@@ -3,8 +3,12 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/evso.iml" filepath="$PROJECT_DIR$/.idea/modules/evso.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/evso_main.iml" filepath="$PROJECT_DIR$/.idea/modules/evso_main.iml" group="evso" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/evso_test.iml" filepath="$PROJECT_DIR$/.idea/modules/evso_test.iml" group="evso" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/evso/evso-evso.iml" filepath="$PROJECT_DIR$/.idea/modules/evso/evso-evso.iml" group="evso" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/evso/evso-evso_main.iml" filepath="$PROJECT_DIR$/.idea/modules/evso/evso-evso_main.iml" group="evso" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/evso/evso-evso_test.iml" filepath="$PROJECT_DIR$/.idea/modules/evso/evso-evso_test.iml" group="evso" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/evsosample.iml" filepath="$PROJECT_DIR$/.idea/modules/evsosample.iml" group="evsosample" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/evsosample/evsosample_main.iml" filepath="$PROJECT_DIR$/.idea/modules/evsosample/evsosample_main.iml" group="evsosample" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/evsosample/evsosample_test.iml" filepath="$PROJECT_DIR$/.idea/modules/evsosample/evsosample_test.iml" group="evsosample" />
     </modules>
   </component>
 </project>
