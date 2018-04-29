@@ -20,7 +20,7 @@ public class AggregateRepository {
         countModel = new AggregateCounterReadModel(store);
     }
 
-    public AggregateExample findById(UUID id) {
+    public AggregateExample findById(AggregateId id) {
         EventReplayer replayer = new EventReplayer();
         List<StorableEvent> storedEvents = store.loadEventsForAggregate(id);
         if(storedEvents.isEmpty()) {

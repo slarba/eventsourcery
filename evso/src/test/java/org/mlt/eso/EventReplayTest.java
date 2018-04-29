@@ -49,7 +49,7 @@ public class EventReplayTest {
 
         AggregateRepository repo = new AggregateRepository(eventStore);
 
-        AtomicReference<UUID> originalId = new AtomicReference<>();
+        AtomicReference<AggregateId> originalId = new AtomicReference<>();
 
         List<StorableEvent> events = Events.collect(() -> {
             AggregateExample ex = new AggregateExample(0, "kek");

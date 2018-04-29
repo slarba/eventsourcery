@@ -1,5 +1,6 @@
 package org.mlt.eso.stores;
 
+import org.mlt.eso.Identity;
 import org.mlt.eso.serialization.StorableEvent;
 import org.mlt.eso.serialization.StorableEventSerializer;
 
@@ -29,9 +30,9 @@ public class JDBCEventStore extends NotifyingEventStore {
     }
 
     @Override
-    public List<StorableEvent> loadEventsForAggregate(UUID uuid) {
+    public List<StorableEvent> loadEventsForAggregate(Identity id) {
         return jdbc.withQuery("SELECT data FROM events WHERE aggregateId=? ORDER BY version ASC", (stmt) -> {
-            stmt.setObject(1, uuid);
+            stmt.setObject(1, id.getUUID());
         });
     }
 

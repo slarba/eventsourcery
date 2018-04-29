@@ -57,13 +57,17 @@ public class EventReplayerTest {
         return new StorableEvent(UUID.randomUUID(), 0, System.currentTimeMillis(), e);
     }
 
+    public class SampleId extends Identity {
+        public SampleId() {}
+    }
+
     public class SampleAggregate extends Aggregate {
         public int event1Called;
         public int event2Called;
         public int counter = 1;
 
         public SampleAggregate() {
-            super(true);
+            super(new SampleId());
         }
 
         public void on(SampleEvent1 event) {

@@ -1,6 +1,7 @@
 package org.mlt.esotest.events;
 
 import org.mlt.eso.Event;
+import org.mlt.esotest.AggregateId;
 
 import java.util.UUID;
 
@@ -10,13 +11,13 @@ import java.util.UUID;
 public class AggregateExampleCreated extends Event {
     private int count;
     private String name;
-    private UUID id;
+    private AggregateId id;
 
     protected AggregateExampleCreated() {
 
     }
 
-    public AggregateExampleCreated(UUID id, int count, String name) {
+    public AggregateExampleCreated(AggregateId id, int count, String name) {
         this.id = id;
         this.count = count;
         this.name = name;
@@ -30,7 +31,7 @@ public class AggregateExampleCreated extends Event {
         return name;
     }
 
-    public UUID getId() {
+    public AggregateId getId() {
         return id;
     }
 

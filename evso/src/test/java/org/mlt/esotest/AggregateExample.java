@@ -10,7 +10,7 @@ import org.mlt.esotest.events.NameSetEvent;
 /**
  * Created by Marko on 26.4.2018.
  */
-public class AggregateExample extends Aggregate {
+public class AggregateExample extends Aggregate<AggregateId> {
     private int count;
     private String name;
 
@@ -18,7 +18,7 @@ public class AggregateExample extends Aggregate {
     }
 
     public AggregateExample(int count, String name) {
-        super(true);
+        super(new AggregateId());
         Events.dispatch(this, new AggregateExampleCreated(getId(), count, name));
     }
 

@@ -34,7 +34,7 @@ public class Events {
         }
         List<StorableEvent> l = stack.peek();
         for(Event ev : e) {
-            l.add(new StorableEvent(source.getId(), source.getVersion(), System.currentTimeMillis(), ev));
+            l.add(new StorableEvent(source.getId().getUUID(), source.getVersion(), System.currentTimeMillis(), ev));
             source.bumpVersion();
         }
     }

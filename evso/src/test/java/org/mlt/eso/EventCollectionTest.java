@@ -38,7 +38,7 @@ public class EventCollectionTest {
             // aggregate version should now be 5
             assertEquals(5, sample.getVersion());
             // source of the event should be the aggregate
-            assertEquals(sample.getId(), subEvents.get(0).getAggregateId());
+            assertEquals(sample.getId().getUUID(), subEvents.get(0).getAggregateId());
         });
 
         assertEquals(3, events.size());
@@ -46,7 +46,7 @@ public class EventCollectionTest {
         assertEquals(new SampleEvent(2), events.get(1).getData());
         assertEquals(new SampleEvent(3), events.get(2).getData());
         // source of the event should be the aggregate
-        assertEquals(sample.getId(), events.get(0).getAggregateId());
+        assertEquals(sample.getId().getUUID(), events.get(0).getAggregateId());
         // aggregate version should now be 5
         assertEquals(5, sample.getVersion());
     }
@@ -72,8 +72,12 @@ public class EventCollectionTest {
         assertEquals(1, thread1Events.size());
     }
 
+    private class SampleId extends Identity {
+        public SampleId() {}
+    }
+
     private class SampleAggregate extends Aggregate {
-        protected SampleAggregate() { super(true); }
+        protected SampleAggregate() { super(new SampleId()); }
     }
 
     private class SampleEvent extends Event {

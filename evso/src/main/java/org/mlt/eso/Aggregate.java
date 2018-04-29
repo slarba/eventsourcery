@@ -1,30 +1,26 @@
 package org.mlt.eso;
 
-import java.util.UUID;
-
 /**
  * Created by Marko on 26.4.2018.
  */
-public class Aggregate {
-    private UUID id;
+public class Aggregate<T extends Identity> {
+    private T id;
     private long version;
     private boolean deleted;
 
     protected Aggregate() {
     }
 
-    protected Aggregate(boolean init) {
-        if(init) {
-            this.id = UUID.randomUUID();
-            version = 0;
-        }
+    protected Aggregate(T id) {
+        this.id = id;
+        version = 0;
     }
 
-    public UUID getId() { return id; }
+    public T getId() { return id; }
 
     public long getVersion() { return version; }
 
-    protected void setId(UUID id) {
+    protected void setId(T id) {
         this.id = id;
     }
 
