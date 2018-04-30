@@ -1,9 +1,10 @@
 package org.mlt.evsosample;
 
-import static spark.Spark.get;
+import org.mlt.evsosample.application.Application;
 
 public class Main {
     public static void main(String[] args) {
-        get("/hello", (req,resp) -> "Hello");
+        Application app = new Application();
+        app.run();
     }
 }
