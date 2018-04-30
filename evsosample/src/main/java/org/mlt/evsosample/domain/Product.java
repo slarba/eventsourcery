@@ -17,6 +17,14 @@ public class Product extends Aggregate<ProductId> {
         Events.dispatch(this, new ProductCreated(getId(), name, unitPrice));
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getUnitPrice() {
+        return unitPrice;
+    }
+
     public void on(ProductCreated event) {
         setId(event.getProductId());
         name = event.getName();
@@ -30,6 +38,6 @@ public class Product extends Aggregate<ProductId> {
 
     public void addToInventory(int amount) {
         isInInventory = true;
-        Events.dispatch(this, new ProductAddedToInventory(getId(), amount));
+        Events.dispatch(this, new ProductAddedToInventory(getId(), unitPrice, amount));
     }
 }

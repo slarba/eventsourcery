@@ -8,4 +8,12 @@ public class InventoryItem {
         this.productId = id;
         this.amount = amount;
     }
+
+    public ProductId getProductId() {
+        return productId;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
 }

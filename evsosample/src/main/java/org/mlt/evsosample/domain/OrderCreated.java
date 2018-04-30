@@ -17,4 +17,12 @@ public class OrderCreated extends Event {
     public String getType() {
         return "OrderCreated";
     }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public OrderId getOrderId() {
+        return orderId;
+    }
 }

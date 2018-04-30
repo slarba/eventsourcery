@@ -13,5 +13,6 @@ public interface EventStore {
     List<StorableEvent> loadEventsForAggregate(Identity id);
     List<StorableEvent> loadEvents(int startindex, int count);
     List<StorableEvent> loadEventsOfType(String[] types, int startindex, int count);
+    List<StorableEvent> loadEventsOfType(String type, int startindex, int count);
     void append(List<StorableEvent> events);
 }

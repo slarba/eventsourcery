@@ -19,4 +19,12 @@ public class OrderLineAdded extends Event {
     public String getType() {
         return "OrderLineAdded";
     }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
 }

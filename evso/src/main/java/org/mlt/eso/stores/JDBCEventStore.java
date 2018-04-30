@@ -23,10 +23,11 @@ public class JDBCEventStore extends NotifyingEventStore {
                     + "aggregateId uuid not null,"
                     + "version integer not null,"
                     + "occurred timestamp not null,"
-                    + "type varchar(128) not null,"
+                    + "type varchar(64) not null,"
                     + "data clob not null"
                     + ")");
-        jdbc.executeSql("CREATE UNIQUE INDEX IF NOT EXISTS event_pk ON events (aggregateId, version)");
+        jdbc.executeSql("CREATE UNIQUE INDEX IF NOT EXISTS event_pk ON events (aggregateId, version ASC)");
+        jdbc.executeSql("CREATE INDEX IF NOT EXISTS type_idx ON events (type, id ASC)");
     }
 
     @Override
@@ -50,6 +51,15 @@ public class JDBCEventStore extends NotifyingEventStore {
                 joinAsStrings(types)), (stmt) -> {
             stmt.setInt(1, count);
             stmt.setInt(2, startindex);
+        });
+    }
+
+    @Override
+    public List<StorableEvent> loadEventsOfType(String type, int startindex, int count) {
+        return jdbc.withQuery("SELECT data FROM events WHERE type=? ORDER BY id ASC LIMIT ? OFFSET ?", (stmt) -> {
+            stmt.setString(1, type);
+            stmt.setInt(2, count);
+            stmt.setInt(3, startindex);
         });
     }
 

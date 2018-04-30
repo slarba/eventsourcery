@@ -16,15 +16,23 @@ public class Events {
         void run() throws Throwable;
     }
 
-    public static List<StorableEvent> collect(DomainCodeBlock r) {
+    public static void beginCollect() {
         events.get().push(new ArrayList<>());
+    }
+
+    public static List<StorableEvent> endCollect() {
+        return events.get().pop();
+    }
+
+    public static List<StorableEvent> collect(DomainCodeBlock r) {
+        beginCollect();
         try {
             r.run();
         } catch(Throwable t) {
-            events.get().pop();
+            endCollect();
             throw new RuntimeException(t);
         }
-        return events.get().pop();
+        return endCollect();
     }
 
     public static void dispatch(Aggregate source, Event... e) {
@@ -47,7 +55,7 @@ public class Events {
         return mapping.get(id);
     }
 
-    public static void registerEventType(String id, Class<?> cls) {
+    public static void registerEventType(String id, Class<? extends Event> cls) {
         mapping.put(id, cls.getName());
     }
 
