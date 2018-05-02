@@ -18,8 +18,12 @@ public class EventMigrator {
         migrations.put(deprecatedEvent, migration);
     }
 
+    public Stream<StorableEvent> migrateStream(List<StorableEvent> events) {
+        return events.stream().flatMap(this::migrateSingle);
+    }
+
     public List<StorableEvent> migrate(List<StorableEvent> events) {
-        return events.stream().flatMap(this::migrateSingle).collect(Collectors.toList());
+        return migrateStream(events).collect(Collectors.toList());
     }
 
     private Stream<StorableEvent> migrateSingle(StorableEvent e) {

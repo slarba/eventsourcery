@@ -1,6 +1,5 @@
 package org.mlt.eso.stores;
 
-import org.mlt.eso.Identity;
 import org.mlt.eso.serialization.StorableEvent;
 
 import java.util.ArrayList;
@@ -13,9 +12,7 @@ public abstract class NotifyingEventStore implements EventStore {
     }
 
     protected void notifyListeners(List<StorableEvent> events) {
-        for(AppendListener l : listeners) {
-            l.eventsAppended(events);
-        }
+        listeners.forEach((l) -> l.eventsAppended(events));
     }
 
     public void addAppendListener(AppendListener listener) {

@@ -22,9 +22,8 @@ public class EventReplayer {
     }
 
     public void rehydrate(Aggregate ex, List<StorableEvent> originalEvents) {
-        List<StorableEvent> events = migrator.migrate(originalEvents);
-        try {
-            for (StorableEvent event : events) {
+        migrator.migrateStream(originalEvents).forEach((event) -> {
+            try {
                 if(ex.isDeleted()) {
                     throw new AggregateAlreadyDeletedException("attempt to rehydrate events on deleted aggregate");
                 }
@@ -37,29 +36,28 @@ public class EventReplayer {
                             + Events.eventTypeForClass(data.getClass().getName()) + " (" + data.getClass().getName() + ") in "
                             + ex.getClass().getName(), nsme);
                 }
+            } catch(InvocationTargetException iv) {
+                throw new RuntimeException("event handler error: ", iv);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("illegal access", e);
             }
-        } catch(InvocationTargetException iv) {
-            throw new RuntimeException("event handler error: ", iv);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("illegal access", e);
-        }
+        });
     }
 
     public void dispatch(Object ex, List<StorableEvent> originalEvents) {
-        List<StorableEvent> events = migrator.migrate(originalEvents);
-        try {
-            for (StorableEvent event : events) {
+        migrator.migrateStream(originalEvents).forEach((event) -> {
+            try {
                 try {
                     invokeEventHandler(ex, event.getData());
                 } catch(NoSuchMethodException nsme) {
                     // ignore
                 }
+            } catch(InvocationTargetException iv) {
+                throw new RuntimeException("event handler error: ", iv);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("illegal access", e);
             }
-        } catch(InvocationTargetException iv) {
-            throw new RuntimeException("event handler error: ", iv);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("illegal access", e);
-        }
+        });
     }
 
     private void invokeEventHandler(Object ex, Event data)
