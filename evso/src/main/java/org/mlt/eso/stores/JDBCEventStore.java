@@ -10,14 +10,25 @@ import java.sql.*;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * JDBC event store implementation
+ */
 public class JDBCEventStore extends NotifyingEventStore {
 
     private final JDBCUtil jdbc;
 
-    public JDBCEventStore(DataSource ds) {
-        this.jdbc = new JDBCUtil(ds);
+    /**
+     * Construct from DataSource
+     *
+     * @param dataSource DataSource
+     */
+    public JDBCEventStore(DataSource dataSource) {
+        this.jdbc = new JDBCUtil(dataSource);
     }
 
+    /**
+     * Create event store schema in the database. Does nothing if schema has already been created.
+     */
     public void createSchema() {
         jdbc.executeSql("CREATE TABLE IF NOT EXISTS events("
                     + "id integer identity primary key,"

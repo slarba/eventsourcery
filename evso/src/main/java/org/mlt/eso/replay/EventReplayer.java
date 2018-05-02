@@ -12,29 +12,50 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * Created by Marko on 26.4.2018.
+ * Replays a list of events on aggregate.
+ *
+ * Aggregate should implement on-methods with event class as its only argument, for example:
+ * {@code public void on(OrderCreated event) {
+ *
+ * }}
  */
 public class EventReplayer {
-    public EventMigrator migrator = new EventMigrator();
+    private EventMigrator migrator = new EventMigrator();
 
-    public void registerMigration(String deprecatedEvent, EventMigration<? extends Event> migration) {
-        migrator.registerMigration(deprecatedEvent, migration);
+    /**
+     * Register an event migration.
+     *
+     * Events evolve. Event migrations allow mangling of the event stream on the fly to upgrade old events.
+     *
+     * @param deprecatedEventName name of the deprecated event
+     * @param migration instance of {@link EventMigration} that handles event migration
+     */
+    public void registerMigration(String deprecatedEventName, EventMigration<? extends Event> migration) {
+        migrator.registerMigration(deprecatedEventName, migration);
     }
 
-    public void rehydrate(Aggregate ex, List<StorableEvent> originalEvents) {
-        migrator.migrateStream(originalEvents).forEach((event) -> {
+    /**
+     * Rehydrate an aggregate from the given event list. Event handlers are called using reflection.
+     *
+     * @throws MissingEventHandlerException if no event handler is found
+     * @throws AggregateAlreadyDeletedException if aggregate is in deleted state {@link Aggregate#isDeleted()}
+     * @param aggregate (empty) aggregate instance to be reconstituted
+     * @param events list of events loaded from event store
+     */
+    public void rehydrate(Aggregate aggregate, List<StorableEvent> events) {
+        migrator.migrateStream(events).forEach((event) -> {
             try {
-                if(ex.isDeleted()) {
+                if(aggregate.isDeleted()) {
                     throw new AggregateAlreadyDeletedException("attempt to rehydrate events on deleted aggregate");
                 }
                 Event data = event.getData();
                 try {
-                    invokeEventHandler(ex, data);
-                    ex.bumpVersion();
+                    invokeEventHandler(aggregate, data);
+                    aggregate.bumpVersion();
                 } catch(NoSuchMethodException nsme) {
                     throw new MissingEventHandlerException("no event handler for event "
                             + Events.eventTypeForClass(data.getClass().getName()) + " (" + data.getClass().getName() + ") in "
-                            + ex.getClass().getName(), nsme);
+                            + aggregate.getClass().getName(), nsme);
                 }
             } catch(InvocationTargetException iv) {
                 throw new RuntimeException("event handler error: ", iv);
@@ -44,11 +65,17 @@ public class EventReplayer {
         });
     }
 
-    public void dispatch(Object ex, List<StorableEvent> originalEvents) {
-        migrator.migrateStream(originalEvents).forEach((event) -> {
+    /**
+     * Dispatch events to any object. Missing handlers are ignored; useful for filtering through all events
+     *
+     * @param object any object implementing some event handlers
+     * @param events list of events loaded from event store
+     */
+    public void dispatch(Object object, List<StorableEvent> events) {
+        migrator.migrateStream(events).forEach((event) -> {
             try {
                 try {
-                    invokeEventHandler(ex, event.getData());
+                    invokeEventHandler(object, event.getData());
                 } catch(NoSuchMethodException nsme) {
                     // ignore
                 }
