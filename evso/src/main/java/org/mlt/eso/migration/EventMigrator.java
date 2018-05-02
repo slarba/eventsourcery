@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EventMigrator {
     private Map<String, EventMigration<? extends Event>> migrations = new HashMap<>();
@@ -17,19 +19,18 @@ public class EventMigrator {
     }
 
     public List<StorableEvent> migrate(List<StorableEvent> events) {
-        List<StorableEvent> result = new ArrayList<>();
-        for(StorableEvent e : events) {
-            EventMigration<? extends Event> migration = getMigrationFor(e.getData());
-            if(migration!=null) {
-                List<Event> migrated = migration.migrate(e.getData());
-                for(Event me : migrated) {
-                    result.add(new StorableEvent(e.getAggregateId(), e.getVersion(), e.getOccurred(), me));
-                }
-            } else {
-                result.add(e);
-            }
+        return events.stream().flatMap(this::migrateSingle).collect(Collectors.toList());
+    }
+
+    private Stream<StorableEvent> migrateSingle(StorableEvent e) {
+        EventMigration<? extends Event> migration = getMigrationFor(e.getData());
+        if(migration!=null) {
+            return migration.migrate(e.getData())
+                    .stream()
+                    .map((migrated) -> new StorableEvent(e.getAggregateId(), e.getVersion(), e.getOccurred(), migrated));
+        } else {
+            return Stream.of(e);
         }
-        return result;
     }
 
     private EventMigration<? extends Event> getMigrationFor(Event data) {
