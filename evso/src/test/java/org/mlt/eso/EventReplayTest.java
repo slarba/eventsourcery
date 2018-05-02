@@ -42,6 +42,8 @@ public class EventReplayTest {
         JDBCEventStore eventStore = new JDBCEventStore(ds);
         eventStore.createSchema();
 
+        assertTrue(false);
+
         Events.registerEventType("AggregateExampleCreated", AggregateExampleCreated.class);
         Events.registerEventType("CountIncreased", CountIncreasedEvent.class);
         Events.registerEventType("NameSet", NameSetEvent.class);
