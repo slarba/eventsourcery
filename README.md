@@ -7,7 +7,7 @@ event collection, replay and migration tools.
 
 # Setting up
 
-Make sure `evso-1.0-SNAPSHOT.jar` is in your classpath.
+Make sure `evso-0.1-SNAPSHOT.jar` is in your classpath.
 
 TODO: publish to Maven repo
 
