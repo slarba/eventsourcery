@@ -13,7 +13,7 @@ TODO: publish to Maven repo
 
 # Aggregates and events
 
-Aggregates are domain objects that have an identity and a lifecycle. Their methods produce events, that can be
+Aggregates are domain objects that have an identity and a lifecycle. Their methods (usually) produce events, that can be
 used later to reconstruct the aggregate state.
 
 Events are objects that describe what happened. They are serialized as JSON (using Jackson library) to the event store,
@@ -70,6 +70,7 @@ public class Order extends Aggregate<OrderId> {
     }
 
     // event handlers are called when replaying the events to bring aggregate up to its current state
+    // never cause side effects outside the aggregate!
 
     public void on(OrderCreated event) {
         setId(event.getOrderId());
@@ -99,6 +100,7 @@ should be in the past tense. Event classes must be registered so that event type
 
 ```java
 Events.registerEventType("OrderCreated", OrderCreated.class);
+Events.registerEventType("OrderCancelled", OrderCancelled.class);
 ```
 
 # Collecting and storing events
@@ -115,6 +117,9 @@ List<StorableEvent> events = Events.collect(() -> {
     order.cancel();
 });
 ```
+
+`collect()` is thread safe; each thread has its own collection list. The calls can be nested without effecting the outer
+`collect()` call.
 
 You can then store the events to provided JDBC event store:
 
@@ -222,3 +227,26 @@ public class OrderCount implements AppendListener {
     }
 }
 ```
+
+# Event migration
+
+Events inevitably change. To mitigate this, the event replayer has a event migration feature. The idea is to register
+a migration for given event type that replaces the deprecated event with 1 to n new events, possibly based on the
+old one:
+
+```java
+eventReplayer.registerMigration("MyDeprecatedEvent", new EventMigration<MyDeprecatedEvent> {
+    @Override
+    public List<Event> migrate(Event old) {
+       return Arrays.asList(new NewEvent1(old.getSomething()), new NewEvent2(), ...);
+    }
+});
+```
+
+# Concurrency
+
+`Aggregate`-derived classes have a version that is incremented each time the event is dispatched, or replayed. An event
+always applies to a certain version of the aggregate that originated the event. In case there are conflicting updates
+to the aggregate (both updates result in an event that applies to the same aggregate version), event store refuses to
+store the events, effectively rolling back the transaction. This can be used to detect concurrent modifications
+(optimistic locking).
