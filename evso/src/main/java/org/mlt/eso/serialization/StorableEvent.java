@@ -54,4 +54,26 @@ public class StorableEvent {
     public long getOccurred() {
         return occurred;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StorableEvent)) return false;
+
+        StorableEvent that = (StorableEvent) o;
+
+        if (version != that.version) return false;
+        //if (occurred != that.occurred) return false;
+        if (!aggregateId.equals(that.aggregateId)) return false;
+        return data.equals(that.data);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = aggregateId.hashCode();
+        result = 31 * result + (int) (version ^ (version >>> 32));
+        //result = 31 * result + (int) (occurred ^ (occurred >>> 32));
+        result = 31 * result + data.hashCode();
+        return result;
+    }
 }

@@ -3,6 +3,8 @@ package org.mlt.eso.replay;
 import org.mlt.eso.Aggregate;
 import org.mlt.eso.Event;
 import org.mlt.eso.Events;
+import org.mlt.eso.migration.EventMigration;
+import org.mlt.eso.migration.EventMigrator;
 import org.mlt.eso.serialization.StorableEvent;
 
 import java.lang.reflect.InvocationTargetException;
@@ -13,7 +15,14 @@ import java.util.List;
  * Created by Marko on 26.4.2018.
  */
 public class EventReplayer {
-    public void rehydrate(Aggregate ex, List<StorableEvent> events) {
+    public EventMigrator migrator = new EventMigrator();
+
+    public void registerMigration(String deprecatedEvent, EventMigration<? extends Event> migration) {
+        migrator.registerMigration(deprecatedEvent, migration);
+    }
+
+    public void rehydrate(Aggregate ex, List<StorableEvent> originalEvents) {
+        List<StorableEvent> events = migrator.migrate(originalEvents);
         try {
             for (StorableEvent event : events) {
                 if(ex.isDeleted()) {
@@ -36,7 +45,8 @@ public class EventReplayer {
         }
     }
 
-    public void dispatch(Object ex, List<StorableEvent> events) {
+    public void dispatch(Object ex, List<StorableEvent> originalEvents) {
+        List<StorableEvent> events = migrator.migrate(originalEvents);
         try {
             for (StorableEvent event : events) {
                 try {
