@@ -44,10 +44,17 @@ public class JDBCUtil {
     public void withUpdate(String sql, StatementInitializer fn) {
         try {
             Connection c = dataSource.getConnection();
+            c.setAutoCommit(false);
             PreparedStatement stmt = c.prepareStatement(sql);
-            fn.apply(stmt);
-            stmt.close();
-            c.close();
+            try {
+                fn.apply(stmt);
+                c.commit();
+            } catch(Throwable t) {
+                c.rollback();
+            } finally {
+                stmt.close();
+                c.close();
+            }
         } catch (SQLException e) {
             throw new RuntimeException("error executing sql: ", e);
         }
