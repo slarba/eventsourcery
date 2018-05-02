@@ -17,9 +17,4 @@ public class NameSetEvent extends Event {
     public String getName() {
         return name;
     }
-
-    @Override
-    public String getType() {
-        return "NameSet";
-    }
 }

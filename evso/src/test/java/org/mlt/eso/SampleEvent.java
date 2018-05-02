@@ -15,9 +15,4 @@ public class SampleEvent extends Event {
         this.foo = foo;
         this.bar = i;
     }
-
-    @Override
-    public String getType() {
-        return "SampleEvent";
-    }
 }

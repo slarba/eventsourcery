@@ -15,11 +15,6 @@ public class ProductCreated extends Event {
         this.unitPrice = unitPrice;
     }
 
-    @Override
-    public String getType() {
-        return "ProductCreated";
-    }
-
     public ProductId getProductId() {
         return productId;
     }

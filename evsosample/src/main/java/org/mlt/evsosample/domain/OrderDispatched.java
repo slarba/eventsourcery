@@ -10,9 +10,4 @@ public class OrderDispatched extends Event {
     public OrderDispatched(OrderId orderId) {
         this.orderId = orderId;
     }
-
-    @Override
-    public String getType() {
-        return "OrderDispatched";
-    }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DatabindContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
+import com.fasterxml.jackson.databind.jsontype.impl.TypeIdResolverBase;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.mlt.eso.Event;
 import org.mlt.eso.Events;
@@ -13,25 +14,16 @@ import java.io.IOException;
 /**
  * Created by Marko on 26.4.2018.
  */
-public class EventTypeIdResolver implements TypeIdResolver {
-    @Override
-    public void init(JavaType baseType) {
-
-    }
+public class EventTypeIdResolver extends TypeIdResolverBase {
 
     @Override
     public String idFromValue(Object value) {
-        return ((Event)value).getType();
+        return Events.eventTypeForClass(value.getClass().getName());
     }
 
     @Override
     public String idFromValueAndType(Object value, Class<?> suggestedType) {
-        return null;
-    }
-
-    @Override
-    public String idFromBaseType() {
-        return null;
+        return idFromValue(value);
     }
 
     @Override
@@ -49,12 +41,7 @@ public class EventTypeIdResolver implements TypeIdResolver {
     }
 
     @Override
-    public String getDescForKnownTypeIds() {
-        return null;
-    }
-
-    @Override
     public JsonTypeInfo.Id getMechanism() {
-        return null;
+        return JsonTypeInfo.Id.CUSTOM;
     }
 }

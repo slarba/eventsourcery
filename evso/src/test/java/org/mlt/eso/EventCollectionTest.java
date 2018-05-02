@@ -103,10 +103,5 @@ public class EventCollectionTest {
         public int hashCode() {
             return exampleField;
         }
-
-        @Override
-        public String getType() {
-            return "SampleEvent";
-        }
     }
 }

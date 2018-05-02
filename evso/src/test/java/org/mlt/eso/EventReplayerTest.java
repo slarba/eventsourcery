@@ -82,27 +82,11 @@ public class EventReplayerTest {
     }
 
     private class SampleEvent1 extends Event {
-        @Override
-        public String getType() {
-            return "Sample1";
-        }
     }
     private class SampleEvent2 extends Event {
-        @Override
-        public String getType() {
-            return "Sample2";
-        }
     }
     private class SampleEvent3 extends Event {
-        @Override
-        public String getType() {
-            return "Sample3";
-        }
     }
     private class SampleDeleteEvent extends Event {
-        @Override
-        public String getType() {
-            return "Delete";
-        }
     }
 }

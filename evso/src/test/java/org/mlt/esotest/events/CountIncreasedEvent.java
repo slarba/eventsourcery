@@ -22,9 +22,4 @@ public class CountIncreasedEvent extends Event {
         return count;
     }
 
-    @Override
-    public String getType() {
-        return "CountIncreased";
-    }
-
 }

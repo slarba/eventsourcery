@@ -11,6 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Events {
     private static final ThreadLocal<Stack<List<StorableEvent>>> events = ThreadLocal.withInitial(Stack::new);
     private static Map<String, String> mapping = new ConcurrentHashMap<>();
+    private static Map<String, String> reverseMapping = new ConcurrentHashMap<>();
+
+    public static String eventTypeForClass(String className) {
+        return reverseMapping.get(className);
+    }
 
     public interface DomainCodeBlock {
         void run() throws Throwable;
@@ -57,9 +62,11 @@ public class Events {
 
     public static void registerEventType(String id, Class<? extends Event> cls) {
         mapping.put(id, cls.getName());
+        reverseMapping.put(cls.getName(), id);
     }
 
     public static void deregisterEventType(String id) {
+        reverseMapping.remove(mapping.get(id));
         mapping.remove(id);
     }
 }

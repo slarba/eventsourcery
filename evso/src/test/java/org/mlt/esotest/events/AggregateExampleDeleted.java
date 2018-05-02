@@ -9,9 +9,4 @@ public class AggregateExampleDeleted extends Event {
     public AggregateExampleDeleted() {
 
     }
-
-    @Override
-    public String getType() {
-        return "AggregateDeleted";
-    }
 }

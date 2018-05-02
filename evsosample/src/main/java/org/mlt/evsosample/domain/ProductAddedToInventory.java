@@ -15,11 +15,6 @@ public class ProductAddedToInventory extends Event {
         this.productUnitPrice = productUnitPrice;
     }
 
-    @Override
-    public String getType() {
-        return "ProductAddedToInventory";
-    }
-
     public ProductId getProductId() {
         return productId;
     }

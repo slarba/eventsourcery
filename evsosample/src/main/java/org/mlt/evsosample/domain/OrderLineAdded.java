@@ -15,11 +15,6 @@ public class OrderLineAdded extends Event {
         this.amount = amount;
     }
 
-    @Override
-    public String getType() {
-        return "OrderLineAdded";
-    }
-
     public int getAmount() {
         return amount;
     }

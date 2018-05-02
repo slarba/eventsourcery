@@ -10,9 +10,4 @@ public class OrderCancelled extends Event {
     public OrderCancelled(OrderId id) {
         this.orderId = id;
     }
-
-    @Override
-    public String getType() {
-        return "OrderCancelled";
-    }
 }

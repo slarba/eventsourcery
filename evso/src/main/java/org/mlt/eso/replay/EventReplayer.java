@@ -2,6 +2,7 @@ package org.mlt.eso.replay;
 
 import org.mlt.eso.Aggregate;
 import org.mlt.eso.Event;
+import org.mlt.eso.Events;
 import org.mlt.eso.serialization.StorableEvent;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,7 +25,7 @@ public class EventReplayer {
                     ex.bumpVersion();
                 } catch(NoSuchMethodException nsme) {
                     throw new MissingEventHandlerException("no event handler for event "
-                            + data.getType() + " (" + data.getClass().getName() + ") in "
+                            + Events.eventTypeForClass(data.getClass().getName()) + " (" + data.getClass().getName() + ") in "
                             + ex.getClass().getName(), nsme);
                 }
             }

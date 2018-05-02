@@ -13,11 +13,6 @@ public class OrderCreated extends Event {
         this.customer = customer;
     }
 
-    @Override
-    public String getType() {
-        return "OrderCreated";
-    }
-
     public Customer getCustomer() {
         return customer;
     }

@@ -1,5 +1,6 @@
 package org.mlt.eso.stores;
 
+import org.mlt.eso.Events;
 import org.mlt.eso.Identity;
 import org.mlt.eso.serialization.StorableEvent;
 import org.mlt.eso.serialization.StorableEventSerializer;
@@ -71,7 +72,7 @@ public class JDBCEventStore extends NotifyingEventStore {
                 stmt.setObject(1, e.getAggregateId());
                 stmt.setLong(2, e.getVersion());
                 stmt.setTimestamp(3, new Timestamp(e.getOccurred()));
-                stmt.setString(4, e.getData().getType());
+                stmt.setString(4, Events.eventTypeForClass(e.getData().getClass().getName()));
                 stmt.setString(5, serializer.eventToJson(e));
                 stmt.executeUpdate();
             }

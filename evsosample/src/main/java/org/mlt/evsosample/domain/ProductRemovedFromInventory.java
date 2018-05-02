@@ -13,11 +13,6 @@ public class ProductRemovedFromInventory extends Event {
         this.productUnitPrice = productUnitPrice;
     }
 
-    @Override
-    public String getType() {
-        return "ProductRemovedFromInventory";
-    }
-
     public ProductId getProductId() {
         return productId;
     }

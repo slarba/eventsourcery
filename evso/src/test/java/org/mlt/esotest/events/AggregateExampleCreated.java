@@ -38,9 +38,4 @@ public class AggregateExampleCreated extends Event {
     public String toString() {
         return "created(" + id + "," + name + "," + count + ")";
     }
-
-    @Override
-    public String getType() {
-        return "AggregateExampleCreated";
-    }
 }
