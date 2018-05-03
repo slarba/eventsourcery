@@ -10,9 +10,19 @@ import java.util.List;
 
 public class JDBCUtil {
     private final DataSource dataSource;
+    private String dbVendor;
 
     public JDBCUtil(DataSource ds) {
         this.dataSource = ds;
+        try {
+            dbVendor = ds.getConnection().getMetaData().getDatabaseProductName();
+        } catch(SQLException e) {
+            dbVendor = "generic";
+        }
+    }
+
+    public String getDbVendor() {
+        return dbVendor;
     }
 
     public void executeSql(String sql) {

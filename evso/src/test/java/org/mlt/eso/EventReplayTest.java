@@ -12,7 +12,6 @@ import org.mlt.esotest.events.NameSetEvent;
 
 import javax.sql.DataSource;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static junit.framework.TestCase.assertTrue;

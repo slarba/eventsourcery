@@ -17,6 +17,8 @@ public class JDBCEventStore extends NotifyingEventStore {
 
     private final JDBCUtil jdbc;
 
+    private String insertSql;
+
     /**
      * Construct from DataSource
      *
@@ -30,7 +32,18 @@ public class JDBCEventStore extends NotifyingEventStore {
      * Create event store schema in the database. Does nothing if schema has already been created.
      */
     public void createSchema() {
-        jdbc.executeSql("CREATE TABLE IF NOT EXISTS events("
+        if(jdbc.getDbVendor().startsWith("PostgreSQL")) {
+            jdbc.executeSql("CREATE TABLE IF NOT EXISTS events("
+                    + "id serial primary key,"
+                    + "aggregateId uuid not null,"
+                    + "version integer not null,"
+                    + "occurred timestamp not null,"
+                    + "type varchar(64) not null,"
+                    + "data jsonb not null"
+                    + ")");
+            insertSql = "INSERT INTO events (aggregateId, version, occurred, type, data) VALUES (?,?,?,?,?::jsonb)";
+        } else {
+            jdbc.executeSql("CREATE TABLE IF NOT EXISTS events("
                     + "id integer identity primary key,"
                     + "aggregateId uuid not null,"
                     + "version integer not null,"
@@ -38,6 +51,8 @@ public class JDBCEventStore extends NotifyingEventStore {
                     + "type varchar(64) not null,"
                     + "data clob not null"
                     + ")");
+            insertSql = "INSERT INTO events (aggregateId, version, occurred, type, data) VALUES (?,?,?,?,?)";
+        }
         jdbc.executeSql("CREATE UNIQUE INDEX IF NOT EXISTS event_pk ON events (aggregateId, version ASC)");
         jdbc.executeSql("CREATE INDEX IF NOT EXISTS type_idx ON events (type, id ASC)");
     }
@@ -78,7 +93,7 @@ public class JDBCEventStore extends NotifyingEventStore {
     @Override
     public void append(List<StorableEvent> events) {
         StorableEventSerializer serializer = new StorableEventSerializer();
-        jdbc.withUpdate("INSERT INTO events (aggregateId, version, occurred, type, data) VALUES (?,?,?,?,?)", (stmt) -> {
+        jdbc.withUpdate(insertSql, (stmt) -> {
             for(StorableEvent e : events) {
                 stmt.setObject(1, e.getAggregateId());
                 stmt.setLong(2, e.getVersion());
