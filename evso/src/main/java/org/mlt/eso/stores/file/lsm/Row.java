@@ -2,6 +2,7 @@ package org.mlt.eso.stores.file.lsm;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Row<K extends Key<K>> implements Comparable<Row<K>> {
@@ -29,7 +30,7 @@ public class Row<K extends Key<K>> implements Comparable<Row<K>> {
         if (this == o) return true;
         if (!(o instanceof Row)) return false;
         Row<?> row = (Row<?>) o;
-        return Objects.equals(key, row.key) && Objects.equals(data, row.data);
+        return Objects.equals(key, row.key) && Arrays.equals(data, row.data);
     }
 
     @Override
