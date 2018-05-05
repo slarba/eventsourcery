@@ -1,4 +1,4 @@
-package org.mlt.eso.stores.file;
+package org.mlt.eso.stores.file.lsm;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

@@ -44,8 +44,9 @@ public class FileEventStore implements EventStore {
     @Override
     public void append(List<StorableEvent> events) {
         StorableEventSerializer serializer = new StorableEventSerializer();
-        events.forEach((e) -> memTable.put(new AggregateKey(e.getAggregateId(), e.getVersion()),
-                serializer.eventToJson(e)));
+        events.forEach((e) -> memTable.put(
+                new EventRow(new AggregateKey(e.getAggregateId(), e.getVersion()),
+                        serializer.eventToJson(e))));
         if(memTable.isSizeThresholdExceeded()) {
             flushToFile();
         }

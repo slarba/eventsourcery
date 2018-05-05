@@ -1,4 +1,4 @@
-package org.mlt.eso.stores.file;
+package org.mlt.eso.stores.file.lsm;
 
 import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnel;

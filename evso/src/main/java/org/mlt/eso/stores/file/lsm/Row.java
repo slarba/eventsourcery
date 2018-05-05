@@ -1,4 +1,4 @@
-package org.mlt.eso.stores.file;
+package org.mlt.eso.stores.file.lsm;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -6,9 +6,9 @@ import java.util.Objects;
 
 public class Row<K extends Key<K>> implements Comparable<Row<K>> {
     private K key;
-    private String data;
+    private byte[] data;
 
-    public Row(K key, String data) {
+    public Row(K key, byte[] data) {
         this.key = key;
         this.data = data;
     }
@@ -20,9 +20,8 @@ public class Row<K extends Key<K>> implements Comparable<Row<K>> {
 
     public void serialize(DataOutputStream out) throws IOException {
         key.serializeTo(out);
-        byte[] bytes = data.getBytes("UTF-8");
-        out.writeInt(bytes.length);
-        out.writeBytes(data);
+        out.writeInt(data.length);
+        out.write(data);
     }
 
     @Override
@@ -43,6 +42,10 @@ public class Row<K extends Key<K>> implements Comparable<Row<K>> {
     }
 
     public int sizeInBytes() {
-        return key.sizeInBytes() + data.length();
+        return key.sizeInBytes() + data.length;
+    }
+
+    public int dataLength() {
+        return data.length;
     }
 }

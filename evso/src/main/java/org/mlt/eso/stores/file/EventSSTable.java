@@ -1,6 +1,7 @@
 package org.mlt.eso.stores.file;
 
 import com.google.common.hash.Funnel;
+import org.mlt.eso.stores.file.lsm.SSTable;
 
 import java.io.File;
 

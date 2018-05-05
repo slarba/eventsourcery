@@ -1,11 +1,11 @@
-package org.mlt.eso.stores.file;
+package org.mlt.eso.stores.file.lsm;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.*;
 
 public class MemTable<K extends Key<K>> {
-    private final Map<K, Row<K>> memTable = new TreeMap<>();
+    private final SortedMap<K, Row<K>> memTable = new TreeMap<>();
     private int totalSize;
     private int sizeThreshold;
 
@@ -14,9 +14,9 @@ public class MemTable<K extends Key<K>> {
         this.sizeThreshold = sizeThreshold;
     }
 
-    public void put(K key, String event) {
-        memTable.put(key, new Row<>(key, event));
-        totalSize += event.length();
+    public void put(Row<K> row) {
+        memTable.put(row.getKey(), row);
+        totalSize += row.dataLength();
     }
 
     public boolean isSizeThresholdExceeded() {
@@ -47,6 +47,7 @@ public class MemTable<K extends Key<K>> {
             return;
         }
 
+        // comes in key order
         List<Row<K>> rows = new ArrayList<>(memTable.values());
 
         // calculate offset table size

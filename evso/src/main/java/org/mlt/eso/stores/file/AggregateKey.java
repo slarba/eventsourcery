@@ -1,5 +1,7 @@
 package org.mlt.eso.stores.file;
 
+import org.mlt.eso.stores.file.lsm.Key;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
