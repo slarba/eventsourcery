@@ -13,6 +13,7 @@ import org.mlt.esotest.events.NameSetEvent;
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -96,5 +97,9 @@ public class EventReplayTest {
         assertEquals(new StorableEvent(originalId.get().getUUID(), 3, 0, new CountIncreasedEvent(1)), e.get(0));
         assertEquals(new StorableEvent(originalId.get().getUUID(), 4, 0, new AggregateExampleDeleted()), e.get(1));
         repo.close();
+
+        // check streaming api
+        List<StorableEvent> streamedEvents = eventStore.loadEventsAsStream().collect(Collectors.toList());
+        assertEquals(5, streamedEvents.size());
     }
 }

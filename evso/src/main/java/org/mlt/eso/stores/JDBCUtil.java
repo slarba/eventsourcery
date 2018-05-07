@@ -51,6 +51,18 @@ public class JDBCUtil {
         }
     }
 
+    public EventSpliterator spliteratorWithQuery(String sql, StatementInitializer fn) {
+        try {
+            Connection c = dataSource.getConnection();
+            PreparedStatement stmt = c.prepareStatement(sql);
+            fn.apply(stmt);
+            ResultSet rs = stmt.executeQuery();
+            return new EventSpliterator(rs, stmt, c);
+        } catch (SQLException e) {
+            throw new RuntimeException("error executing sql: ", e);
+        }
+    }
+
     public void withUpdate(String sql, StatementInitializer fn) {
         try {
             Connection c = dataSource.getConnection();

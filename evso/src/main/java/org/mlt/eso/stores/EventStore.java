@@ -5,6 +5,7 @@ import org.mlt.eso.serialization.StorableEvent;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * Interface for event store implementations
@@ -24,6 +25,9 @@ public interface EventStore {
      */
     List<StorableEvent> loadEventsForAggregate(Identity id, long fromVersion);
 
+    Stream<StorableEvent> loadEventsForAggregateAsStream(Identity id);
+    Stream<StorableEvent> loadEventsForAggregateAsStream(Identity id, long fromVersion);
+
     /**
      * Load upto count events starting from given index. Useful for paging through all events produced
      *
@@ -32,6 +36,13 @@ public interface EventStore {
      * @return list of stored events. if size()==count, there's probably more events in the store
      */
     List<StorableEvent> loadEvents(int startindex, int count);
+
+    /**
+     * Load all events as a stream
+     *
+     * @return
+     */
+    Stream<StorableEvent> loadEventsAsStream();
 
     /**
      * Filter event stream for spesific types of events
@@ -43,6 +54,8 @@ public interface EventStore {
      */
     List<StorableEvent> loadEventsOfType(String[] types, int startindex, int count);
 
+    Stream<StorableEvent> loadEventsOfTypeAsStream(String[] types);
+
     /**
      * Similar to {@link #loadEventsOfType(String[], int, int)} but for one event type
      *
@@ -53,6 +66,8 @@ public interface EventStore {
      * @return list of stored events
      */
     List<StorableEvent> loadEventsOfType(String type, int startindex, int count);
+
+    Stream<StorableEvent> loadEventsOfTypeAsStream(String type);
 
     /**
      * Append collected events to event store.
