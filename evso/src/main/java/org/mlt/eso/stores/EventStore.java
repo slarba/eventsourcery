@@ -19,6 +19,12 @@ public interface EventStore {
     List<StorableEvent> loadEventsForAggregate(Identity id);
 
     /**
+     * Load events occurred to given aggregate, starting from spesific version (included)
+     * Useful for replaying in top of snapshots
+     */
+    List<StorableEvent> loadEventsForAggregate(Identity id, long fromVersion);
+
+    /**
      * Load upto count events starting from given index. Useful for paging through all events produced
      *
      * @param startindex 0-based start index

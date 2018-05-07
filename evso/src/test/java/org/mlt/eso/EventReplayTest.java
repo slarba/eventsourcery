@@ -90,6 +90,11 @@ public class EventReplayTest {
         assertNull(result2);
         assertEquals(0, repo.getAggregateCount());
 
+        // check that loading events starting from a spesific version works
+        List<StorableEvent> e = eventStore.loadEventsForAggregate(originalId.get(), 3);
+        assertEquals(2, e.size());
+        assertEquals(new StorableEvent(originalId.get().getUUID(), 3, 0, new CountIncreasedEvent(1)), e.get(0));
+        assertEquals(new StorableEvent(originalId.get().getUUID(), 4, 0, new AggregateExampleDeleted()), e.get(1));
         repo.close();
     }
 }

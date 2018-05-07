@@ -22,4 +22,18 @@ public class CountIncreasedEvent extends Event {
         return count;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CountIncreasedEvent)) return false;
+
+        CountIncreasedEvent that = (CountIncreasedEvent) o;
+
+        return count == that.count;
+    }
+
+    @Override
+    public int hashCode() {
+        return count;
+    }
 }

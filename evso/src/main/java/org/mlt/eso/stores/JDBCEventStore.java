@@ -65,6 +65,14 @@ public class JDBCEventStore extends NotifyingEventStore {
     }
 
     @Override
+    public List<StorableEvent> loadEventsForAggregate(Identity id, long fromVersion) {
+        return jdbc.withQuery("SELECT data FROM events WHERE aggregateId=? and version>=? ORDER BY version ASC", (stmt) -> {
+            stmt.setObject(1, id.getUUID());
+            stmt.setLong(2, fromVersion);
+        });
+    }
+
+    @Override
     public List<StorableEvent> loadEvents(int startindex, int count) {
         return jdbc.withQuery("SELECT data FROM events WHERE id=>? ORDER BY id ASC LIMIT ?", (stmt) -> {
             stmt.setInt(1, startindex);
