@@ -9,4 +9,5 @@ package org.mlt.eso;
  * Event classes must be registered using {@link org.mlt.eso.Events#registerEventType(String, Class)}
  */
 public abstract class Event {
+
 }

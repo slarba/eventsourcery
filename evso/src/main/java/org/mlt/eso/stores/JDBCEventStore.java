@@ -8,7 +8,8 @@ import org.mlt.eso.serialization.StorableEventSerializer;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * JDBC event store implementation
@@ -65,11 +66,42 @@ public class JDBCEventStore extends NotifyingEventStore {
     }
 
     @Override
+    public List<StorableEvent> loadEventsForAggregate(Identity id, long fromVersion) {
+        return jdbc.withQuery("SELECT data FROM events WHERE aggregateId=? and version>=? ORDER BY version ASC", (stmt) -> {
+            stmt.setObject(1, id.getUUID());
+            stmt.setLong(2, fromVersion);
+        });
+    }
+
+    @Override
+    public Stream<StorableEvent> loadEventsForAggregateAsStream(Identity id) {
+        EventSpliterator es = jdbc.spliteratorWithQuery("SELECT data FROM events WHERE aggregateId=? ORDER BY version ASC", (stmt) -> {
+            stmt.setObject(1, id.getUUID());
+        });
+        return StreamSupport.stream(es, false);
+    }
+
+    @Override
+    public Stream<StorableEvent> loadEventsForAggregateAsStream(Identity id, long fromVersion) {
+        EventSpliterator es = jdbc.spliteratorWithQuery("SELECT data FROM events WHERE aggregateId=? and version>=? ORDER BY version ASC", (stmt) -> {
+            stmt.setObject(1, id.getUUID());
+            stmt.setLong(2, fromVersion);
+        });
+        return StreamSupport.stream(es, false);
+    }
+
+    @Override
     public List<StorableEvent> loadEvents(int startindex, int count) {
         return jdbc.withQuery("SELECT data FROM events WHERE id=>? ORDER BY id ASC LIMIT ?", (stmt) -> {
             stmt.setInt(1, startindex);
             stmt.setInt(2, count);
         });
+    }
+
+    @Override
+    public Stream<StorableEvent> loadEventsAsStream() {
+        EventSpliterator s = jdbc.spliteratorWithQuery("SELECT data FROM events ORDER BY id ASC", (stmt) -> {});
+        return StreamSupport.stream(s, false);
     }
 
     @Override
@@ -82,12 +114,25 @@ public class JDBCEventStore extends NotifyingEventStore {
     }
 
     @Override
+    public Stream<StorableEvent> loadEventsOfTypeAsStream(String[] types) {
+        EventSpliterator es = jdbc.spliteratorWithQuery(String.format("SELECT data FROM events WHERE type IN (%s) ORDER BY id ASC",
+                joinAsStrings(types)), (stmt) -> {});
+        return StreamSupport.stream(es, false);
+    }
+
+    @Override
     public List<StorableEvent> loadEventsOfType(String type, int startindex, int count) {
         return jdbc.withQuery("SELECT data FROM events WHERE type=? ORDER BY id ASC LIMIT ? OFFSET ?", (stmt) -> {
             stmt.setString(1, type);
             stmt.setInt(2, count);
             stmt.setInt(3, startindex);
         });
+    }
+
+    @Override
+    public Stream<StorableEvent> loadEventsOfTypeAsStream(String type) {
+        EventSpliterator es = jdbc.spliteratorWithQuery(String.format("SELECT data FROM events WHERE type=? ORDER BY id ASC", type), (stmt) -> {});
+        return StreamSupport.stream(es, false);
     }
 
     @Override
