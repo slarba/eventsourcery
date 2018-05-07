@@ -1,13 +1,20 @@
 package org.mlt.eso.stores.file;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
 
 public class MemTableTest {
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+
     @Test
     public void testAggregateKeyOrderingAndEquality() {
         UUID id = UUID.randomUUID();
@@ -44,5 +51,33 @@ public class MemTableTest {
         in.close();
 
         assertEquals(row, des);
+    }
+
+    @Test
+    public void testSSFileSerialization() throws IOException, InstantiationException, IllegalAccessException {
+        EventMemTable memTable = new EventMemTable(200);
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        memTable.put(new EventRow(new AggregateKey(id1, 1), "foo"));
+        memTable.put(new EventRow(new AggregateKey(id1, 2), "bat"));
+        memTable.put(new EventRow(new AggregateKey(id2, 1), "another row"));
+        memTable.put(new EventRow(new AggregateKey(id1, 3), "kek!"));
+
+        File tmpFile = folder.newFile();
+        EventSSTable ssTable = new EventSSTable(tmpFile, 4);
+        ssTable.create();
+
+        memTable.serialize(ssTable);
+        ssTable.close();
+
+        ssTable.open();
+        Map<AggregateKey, Long> index = ssTable.deserialize(AggregateKey.class);
+        assertEquals(4, index.size());
+        Set<AggregateKey> keys = index.keySet();
+        assertTrue(keys.contains(new AggregateKey(id1, 1)));
+        assertTrue(keys.contains(new AggregateKey(id1, 2)));
+        assertTrue(keys.contains(new AggregateKey(id1, 3)));
+        assertTrue(keys.contains(new AggregateKey(id2, 1)));
+        assertFalse(keys.contains(new AggregateKey(id2, 2)));
     }
 }

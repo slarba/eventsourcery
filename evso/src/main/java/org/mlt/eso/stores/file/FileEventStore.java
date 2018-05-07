@@ -6,6 +6,7 @@ import org.mlt.eso.serialization.StorableEventSerializer;
 import org.mlt.eso.stores.EventStore;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class FileEventStore implements EventStore {
     private static final int DEFAULT_BUFFER_SIZE = 10*1024;
@@ -27,7 +28,27 @@ public class FileEventStore implements EventStore {
     }
 
     @Override
+    public List<StorableEvent> loadEventsForAggregate(Identity id, long fromVersion) {
+        return null;
+    }
+
+    @Override
+    public Stream<StorableEvent> loadEventsForAggregateAsStream(Identity id) {
+        return null;
+    }
+
+    @Override
+    public Stream<StorableEvent> loadEventsForAggregateAsStream(Identity id, long fromVersion) {
+        return null;
+    }
+
+    @Override
     public List<StorableEvent> loadEvents(int startindex, int count) {
+        return null;
+    }
+
+    @Override
+    public Stream<StorableEvent> loadEventsAsStream() {
         return null;
     }
 
@@ -37,7 +58,17 @@ public class FileEventStore implements EventStore {
     }
 
     @Override
+    public Stream<StorableEvent> loadEventsOfTypeAsStream(String[] types) {
+        return null;
+    }
+
+    @Override
     public List<StorableEvent> loadEventsOfType(String type, int startindex, int count) {
+        return null;
+    }
+
+    @Override
+    public Stream<StorableEvent> loadEventsOfTypeAsStream(String type) {
         return null;
     }
 

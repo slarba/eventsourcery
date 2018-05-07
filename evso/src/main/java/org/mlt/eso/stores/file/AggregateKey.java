@@ -12,6 +12,8 @@ public class AggregateKey extends Key<AggregateKey> {
     private UUID id;
     private long version;
 
+    public AggregateKey() {}
+
     public AggregateKey(UUID aggregateId, long version) {
         this.id = aggregateId;
         this.version = version;
@@ -51,6 +53,14 @@ public class AggregateKey extends Key<AggregateKey> {
     @Override
     public int sizeInBytes() {
         return 3*Long.BYTES;
+    }
+
+    @Override
+    public void deserialize(DataInputStream in) throws IOException {
+        version = in.readLong();
+        long leastBits = in.readLong();
+        long mostBits = in.readLong();
+        id = new UUID(mostBits, leastBits);
     }
 
     public static AggregateKey serializeFrom(DataInputStream in) throws IOException {

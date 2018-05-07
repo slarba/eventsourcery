@@ -4,6 +4,8 @@ import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnel;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class SSTable<K extends Key<K>> {
     private File file;
@@ -63,5 +65,17 @@ public abstract class SSTable<K extends Key<K>> {
 
     public void addKey(K key) {
         bloomFilter.put(key);
+    }
+
+    public Map<K, Long> deserialize(Class<K> keyClass) throws IOException, IllegalAccessException, InstantiationException {
+        int count = in.readInt();
+        Map<K, Long> index = new HashMap<>();
+        for(int i=0; i<count; i++) {
+            K key = keyClass.newInstance();
+            key.deserialize(in);
+            long offset = in.readLong();
+            index.put(key, offset);
+        }
+        return index;
     }
 }
