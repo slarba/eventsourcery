@@ -60,7 +60,7 @@ public class MemTable<K extends Key<K>> {
         // write offset table
         for(Row<K> row : rows) {
             table.addKey(row.getKey());
-            row.getKey().serializeTo(out);
+            row.getKey().serialize(out);
             out.writeLong(offset);
             offset += row.sizeInBytes();
         }

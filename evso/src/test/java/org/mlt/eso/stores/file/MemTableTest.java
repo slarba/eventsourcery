@@ -46,7 +46,8 @@ public class MemTableTest {
 
         ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
         DataInputStream dis = new DataInputStream(in);
-        EventRow des = EventRow.deserialize(dis);
+        EventRow des = new EventRow();
+        des.deserialize(dis);
         dis.close();
         in.close();
 

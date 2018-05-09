@@ -44,7 +44,7 @@ public class AggregateKey extends Key<AggregateKey> {
     }
 
     @Override
-    public void serializeTo(DataOutputStream out) throws IOException {
+    public void serialize(DataOutputStream out) throws IOException {
         out.writeLong(version);
         out.writeLong(id.getLeastSignificantBits());
         out.writeLong(id.getMostSignificantBits());
@@ -61,13 +61,6 @@ public class AggregateKey extends Key<AggregateKey> {
         long leastBits = in.readLong();
         long mostBits = in.readLong();
         id = new UUID(mostBits, leastBits);
-    }
-
-    public static AggregateKey serializeFrom(DataInputStream in) throws IOException {
-        long ver = in.readLong();
-        long lsb = in.readLong();
-        long msb = in.readLong();
-        return new AggregateKey(new UUID(msb, lsb), ver);
     }
 
     public UUID getId() {

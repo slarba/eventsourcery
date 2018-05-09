@@ -36,7 +36,7 @@ public abstract class SSTable<K extends Key<K>> {
         }
     }
 
-    public boolean isKeyInTable(K key) {
+    public boolean isKeyProbablyInTable(K key) {
         return bloomFilter.mightContain(key);
     }
 
